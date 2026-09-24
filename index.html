@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#142440">
+<meta name="description" content="Ad-free classroom reaction games with live class leaderboards and challenges.">
+<title>Reaction Lab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23142440'/%3E%3Cpath d='M18 3L7 18h8l-1 11 11-16h-8z' fill='%23c3f04b'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+<header>
+  <button class="brand" id="brand" type="button" aria-label="Reaction Lab home"><span>ϟ</span>Reaction Lab</button>
+  <div id="classPill" class="class-pill hidden"></div>
+</header>
+
+<!-- START: choose how to play -->
+<section id="start">
+  <div class="intro"><div>
+    <div class="eyebrow">Ready. Steady. React.</div>
+    <h1>How quickly can you react?</h1>
+    <p class="muted">Practise on your own, join your class, or run a class as the teacher.</p>
+  </div></div>
+  <div class="cards">
+    <article class="card c1"><div class="number">PRACTISE</div><h2>Play on my own</h2><p class="muted">At home or at school. No class code needed. Your rounds are kept on this device.</p><button id="goSolo">Practise</button></article>
+    <article class="card c2"><div class="number">STUDENT</div><h2>Join a class</h2><p class="muted">Type the code on your teacher's screen, or scan the QR code with your camera.</p><button id="goJoin" class="lime">Join a class</button></article>
+    <article class="card c3"><div class="number">TEACHER</div><h2>Create a class</h2><p class="muted">Get a class code and QR code. See a live leaderboard, run class rounds and allow challenges.</p><button id="goTeach">Create a class</button></article>
+  </div>
+</section>
+
+<!-- SOLO PRACTICE HOME -->
+<section id="solo" class="hidden">
+  <div class="intro"><div>
+    <div class="eyebrow">Practice mode</div>
+    <h1>Choose a game</h1>
+    <p class="muted">Complete five trials. Explore your results.</p>
+  </div><label class="field">Player nickname<input id="nickname" maxlength="20" placeholder="e.g. Blue Panda" autocomplete="off"></label></div>
+  <div class="cards gamecards" data-cards="solo"></div>
+  <section class="panel"><div class="row" style="justify-content:space-between"><h2>Your recent rounds</h2><button id="clear" class="secondary">Clear history</button></div>
+    <p class="small muted">Saved in this browser for the nickname above. Shared iPad? Change the nickname before playing.</p><div id="history"></div></section>
+</section>
+
+<!-- JOIN -->
+<section id="join" class="hidden">
+  <div class="narrow">
+    <div class="eyebrow">Student</div>
+    <h1>Join your class</h1>
+    <form id="joinForm" class="panel stack" autocomplete="off">
+      <label class="field">Class code<input id="joinCode" class="codeinput" maxlength="5" inputmode="text" autocapitalize="characters" spellcheck="false" placeholder="ABCDE" required></label>
+      <label class="field">Your name<input id="joinName" maxlength="20" placeholder="First name only" required></label>
+      <button id="joinBtn" class="lime" type="submit">Join</button>
+      <p id="joinStatus" class="small muted" role="status" aria-live="polite"></p>
+    </form>
+    <p class="small muted">Use your first name only. Nothing is saved: the class disappears when your teacher closes it.</p>
+  </div>
+</section>
+
+<!-- STUDENT CLASS HOME -->
+<section id="classHome" class="hidden">
+  <div class="intro"><div>
+    <div class="eyebrow" id="chEyebrow">Class</div>
+    <h1 id="chTitle">You're in!</h1>
+    <p class="muted">Play any game to get on the class leaderboard, or challenge a classmate.</p>
+  </div><button id="leaveClass" class="secondary">Leave class</button></div>
+  <div class="cards gamecards" data-cards="class"></div>
+  <div class="two">
+    <section class="panel"><h2>Leaderboard</h2><div class="tabs" data-tabs="student"></div><ol id="sBoard" class="board"></ol></section>
+    <section class="panel"><h2>Challenge a classmate</h2><p id="chalNote" class="small muted"></p><div id="classmates" class="people"></div></section>
+  </div>
+</section>
+
+<!-- TEACHER DASHBOARD -->
+<section id="teacher" class="hidden">
+  <div class="teach-top">
+    <div class="joinbox panel">
+      <div>
+        <div class="eyebrow">Join at</div>
+        <div id="tLink" class="link"></div>
+        <div class="eyebrow" style="margin-top:14px">Class code</div>
+        <div id="tCode" class="bigcode">·····</div>
+        <div class="row" style="margin-top:12px"><button id="copyLink" class="secondary">Copy link</button><button id="fullscreen" class="secondary">Full screen</button></div>
+      </div>
+      <div id="tQr" class="qr" aria-label="QR code to join the class"></div>
+    </div>
+    <div class="panel stack">
+      <div class="row" style="justify-content:space-between"><h2 style="margin:0"><span id="tCount">0</span> students</h2><button id="endClass" class="danger">End class</button></div>
+      <div id="tStudents" class="people"></div>
+      <label class="toggle"><input type="checkbox" id="allowChal" checked> Allow student challenges</label>
+      <p id="tStatus" class="small muted" role="status"></p>
+    </div>
+  </div>
+  <section class="panel">
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Class round</h2><button id="endRound" class="lime hidden">End round &amp; show results</button></div>
+    <p id="roundInfo" class="muted">Start a round and every student's screen switches to that game. Results appear here live.</p>
+    <div id="roundStart" class="row"><button data-round="colour">Colour change</button><button data-round="ruler">Ruler drop</button><button data-round="sound">Sound reaction</button></div>
+    <div id="roundLive"></div>
+  </section>
+  <div class="two">
+    <section class="panel"><h2>Leaderboard · best average</h2><div class="tabs" data-tabs="teacher"></div><ol id="tBoard" class="board big"></ol></section>
+    <section class="panel"><h2>Challenges</h2><ul id="feed" class="feed"><li class="muted">Challenge results will appear here.</li></ul></section>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="game" class="hidden">
+  <div id="ctxBar" class="ctxbar hidden"></div>
+  <div class="play-top"><div><div class="eyebrow" id="gameType"></div><h1 id="gameTitle"></h1></div><button id="back" class="secondary">Back</button></div>
+  <p id="instructions" class="muted"></p>
+  <div class="row" style="justify-content:space-between"><div id="progress" class="progress">5 trials · Take your time</div><div id="audioTools" class="hidden"><button id="testSound" class="secondary">Test sound</button></div></div>
+  <button id="arena" class="arena" aria-label="Reaction play area"><div id="arenaText"><strong>Tap to start</strong><small>Five trials · Tap anywhere in this area.</small></div><div id="rulerWrap" class="hidden"><div class="catchline"></div><div class="catchlabel">Catch line</div><div id="ruler" class="ruler"></div></div></button>
+  <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+  <div class="buttons"><button id="stop" class="secondary hidden">Stop round</button></div>
+  <p class="small muted">Keep one finger ready. Tap once per cue. Keyboard: Space or Enter in the play area. Switching tabs pauses the round.</p>
+</section>
+
+<!-- RESULTS -->
+<section id="results" class="hidden">
+  <div class="eyebrow">Round complete</div>
+  <h1 id="resultTitle">Your results</h1>
+  <p id="resultSubtitle" class="muted"></p>
+  <div id="classOutcome" class="outcome hidden" role="status" aria-live="polite"></div>
+  <div id="stats" class="stats"></div>
+  <p id="comparison"></p>
+  <div class="panel"><h2>Every trial</h2><div class="table-scroll"><table><thead><tr><th>Trial</th><th>Reaction time</th><th id="extraHeading">From your average</th></tr></thead><tbody id="trials"></tbody></table></div><p id="earlyCount" class="small muted"></p>
+    <details id="attemptDetails"><summary>Full attempt log</summary><div class="table-scroll"><table><thead><tr><th>Attempt</th><th>Trial</th><th>Outcome</th></tr></thead><tbody id="attempts"></tbody></table></div></details></div>
+  <div class="buttons" style="margin-top:22px"><button id="again" class="lime">Try again</button><button id="export" class="secondary">Download results CSV</button><button id="resultHome" class="secondary">Back</button></div>
+  <p class="small muted">Average = total time ÷ 5. Median = the middle time after sorting. Lower times mean a quicker response in this round.</p>
+</section>
+
+<footer>Built for curious minds. No ads, accounts or tracking. Class data lives only on the teacher's open page and disappears when the class ends.<br>Times include screen, touch and audio delays, so compare on similar devices. Ruler distance is simulated, not the physical size on your screen.</footer>
+</main>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<dialog id="chalDialog">
+  <form method="dialog" class="stack">
+    <h2 id="cdTitle">Challenge</h2>
+    <fieldset class="stack"><legend>Game</legend>
+      <label class="opt"><input type="radio" name="cdGame" value="colour" checked> Colour change</label>
+      <label class="opt"><input type="radio" name="cdGame" value="ruler"> Ruler drop</label>
+      <label class="opt"><input type="radio" name="cdGame" value="sound"> Sound reaction</label>
+    </fieldset>
+    <fieldset class="stack"><legend>Type</legend>
+      <label class="opt"><input type="radio" name="cdKind" value="duel" checked> <span><b>Live duel</b> · you both play now, best average wins</span></label>
+      <label class="opt"><input type="radio" name="cdKind" value="beat"> <span><b>Beat my score</b> · <span id="cdBeatNote">they try to beat your best</span></span></label>
+    </fieldset>
+    <p id="cdError" class="small err"></p>
+    <div class="row"><button value="send" id="cdSend" class="lime">Send challenge</button><button value="cancel" class="secondary" formnovalidate>Cancel</button></div>
+  </form>
+</dialog>
+
+<script src="lib/qrcode.js" defer></script>
+<script src="lib/peerjs.min.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>
